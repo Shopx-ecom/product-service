@@ -1,0 +1,33 @@
+server:
+  port: 9020
+
+spring:
+  application:
+    name: product-service
+  profiles:
+    active: dev
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: true
+  jackson:
+    mapper:
+      ACCEPT_CASE_INSENSITIVE_ENUMS: 'true'
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:9000/eureka/
+
+jwt:
+  secret: qwertyuiopasdfghjklzxcvbnmQWERTYUASDFGHJZXCVBNwerty
+  expiry: 900000
+
+springdoc:
+  swagger-ui:
+    enabled: true
+  version: 2.6.7
+  api-docs:
+    enabled: true
+  show-login-endpoint: false
