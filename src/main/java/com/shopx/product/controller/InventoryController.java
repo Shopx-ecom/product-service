@@ -1,5 +1,6 @@
 package com.shopx.product.controller;
 
+import com.shopx.product.core.Constants;
 import com.shopx.product.core.DefaultFilter;
 import com.shopx.product.core.FindResourceOption;
 import com.shopx.product.core.PageResponse;
@@ -8,13 +9,16 @@ import com.shopx.product.dto.InventoryRequestDto;
 import com.shopx.product.dto.InventoryResponseDto;
 import com.shopx.product.dto.InventoryUpdateDto;
 import com.shopx.product.entity.Inventory;
+import com.shopx.product.exception.NotFoundException;
 import com.shopx.product.filter.InventoryFilter;
 import com.shopx.product.mapper.InventoryMapper;
 import com.shopx.product.service.InventoryService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,17 +30,29 @@ public class InventoryController {
 
     private final InventoryService service;
 
+    @PreAuthorize("hasRole('SELLER')")
     @Operation(summary = "Endpoint to create inventory")
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<InventoryResponseDto> create(
-            @Valid @RequestBody InventoryRequestDto dto
+            @Valid @RequestBody InventoryRequestDto dto,
+            HttpServletRequest request
     ) {
+        Long userId = (Long) request.getAttribute(Constants.SESSION_USER_ID);
+
+        if(userId==null)
+            throw new NotFoundException("Seller id is not available");
+
+        Inventory inventory = InventoryMapper.toEntity(dto);
+        inventory.setCreatedBy(userId);
+        inventory.setSellerId(userId);
         Inventory saved = service.createInventory(
-                InventoryMapper.toEntity(dto)
+                inventory
         );
+
         return ResponseEntity.ok(InventoryMapper.toResponse(saved));
     }
 
+    @PreAuthorize("hasAnyRole('CUSTOMER','SELLER')")
     @Operation(summary = "Endpoint to get inventory by id")
     @GetMapping("/{id}")
     public ResponseEntity<InventoryResponseDto> getById(@PathVariable Long id) {
@@ -44,6 +60,7 @@ public class InventoryController {
         return ResponseEntity.ok(InventoryMapper.toResponse(inventory));
     }
 
+    @PreAuthorize("hasRole('CUSTOMER')")
     @Operation(summary = "Endpoint to fetch inventory with filter")
     @GetMapping
     public ResponseEntity<PageResponse<InventoryResponseDto>> getAll(
@@ -80,6 +97,7 @@ public class InventoryController {
         );
     }
 
+    @PreAuthorize("hasRole('SELLER')")
     @Operation(summary = "Endpoint to update inventory")
     @PatchMapping("/{id}")
     public ResponseEntity<InventoryResponseDto> update(
@@ -93,6 +111,7 @@ public class InventoryController {
         return ResponseEntity.ok(InventoryMapper.toResponse(updated));
     }
 
+    @PreAuthorize("hasRole('SELLER')")
     @Operation(summary = "Endpoint to delete inventory")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
@@ -100,10 +119,11 @@ public class InventoryController {
         return ResponseEntity.noContent().build();
     }
 
-   /* @PostMapping("/get/bulk")
+    @PreAuthorize("hasAnyRole('CUSTOMER','SELLER')")
+    @PostMapping("/get/bulk")
     public ResponseEntity< List<InventoryResponseDto>> getInventoryBulk(
             @RequestBody List<InventoryBulkRequest> requests
     ) {
         return ResponseEntity.ok(service.getByProductAndSeller(requests));
-    }*/
+    }
 }

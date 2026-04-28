@@ -5,6 +5,7 @@ import com.shopx.product.filter.ProductFilter;
 import com.shopx.product.service.ProductListingService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public class ProductListingController {
 
     private final ProductListingService service;
 
+    @PreAuthorize("hasAnyRole('SELLER','ADMIN','CUSTOMER')")
     @Operation(summary = "Endpoint to fetch product listings with price and stock")
     @GetMapping
     public List<ProductListingDto> getListings(

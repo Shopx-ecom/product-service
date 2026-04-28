@@ -12,7 +12,6 @@ public class InventoryMapper {
     public static Inventory toEntity(InventoryRequestDto dto) {
         return Inventory.builder()
                 .productId(dto.getProductId())
-                .sellerId(dto.getSellerId())
                 .quantity(dto.getQuantity())
                 .price(dto.getPrice())
                 .build();

@@ -1,5 +1,6 @@
 package com.shopx.product.controller;
 
+import com.shopx.product.core.Constants;
 import com.shopx.product.core.DefaultFilter;
 import com.shopx.product.core.FindResourceOption;
 import com.shopx.product.core.PageResponse;
@@ -9,9 +10,11 @@ import com.shopx.product.filter.ProductFilter;
 import com.shopx.product.mapper.ProductMapper;
 import com.shopx.product.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,17 +24,24 @@ public class ProductController {
 
     private final ProductService service;
 
+    @PreAuthorize("hasRole('SELLER')")
     @Operation(summary = "Endpoint to create product")
     @PostMapping
     public ResponseEntity<ProductResponseDto> create(
-            @Valid @RequestBody ProductRequestDto dto
+            @Valid @RequestBody ProductRequestDto dto,
+            HttpServletRequest request
     ) {
+        Long userId = (Long) request.getAttribute(Constants.SESSION_USER_ID);
+
         Product saved = service.createProduct(
                 ProductMapper.toEntity(dto)
         );
+
+        saved.setCreatedBy(userId);
         return ResponseEntity.ok(ProductMapper.toDto(saved));
     }
 
+    @PreAuthorize("hasAnyRole('SELLER','ADMIN','CUSTOMER')")
     @Operation(summary = "Endpoint to get product by id")
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponseDto> getById(@PathVariable Long id) {
@@ -39,6 +49,7 @@ public class ProductController {
         return ResponseEntity.ok(ProductMapper.toDto(product));
     }
 
+    @PreAuthorize("hasAnyRole('SELLER','ADMIN','CUSTOMER')")
     @Operation(summary = "Endpoint to fetch products with filter")
     @GetMapping
     public ResponseEntity<PageResponse<ProductResponseDto>> getAll(
@@ -71,12 +82,16 @@ public class ProductController {
         );
     }
 
+    @PreAuthorize("hasAnyRole('SELLER','ADMIN')")
     @Operation(summary = "Endpoint to update product")
     @PatchMapping("/{id}")
     public ResponseEntity<ProductResponseDto> update(
             @PathVariable Long id,
-            @Valid @RequestBody ProductUpdateDto dto
+            @Valid @RequestBody ProductUpdateDto dto,
+            HttpServletRequest request
     ) {
+
+        Long userId = (Long) request.getAttribute(Constants.SESSION_USER_ID);
         Product updated = service.updateProduct(
                 id,
                 ProductMapper.toUpdateMap(dto)
@@ -84,9 +99,12 @@ public class ProductController {
         return ResponseEntity.ok(ProductMapper.toDto(updated));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "Endpoint to delete product")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(
+            @PathVariable Long id
+    ) {
         service.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }

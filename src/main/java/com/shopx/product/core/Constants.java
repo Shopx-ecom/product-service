@@ -7,5 +7,6 @@ package com.shopx.product.core;
  */
 public class Constants {
 
-    public static final String SESSION_USER_ID ="USER_ID";
+    public static final String SESSION_USER_ID ="X-User-Id";
+    public static final String SESSION_USER_ROLE ="X-User-Role";
 }

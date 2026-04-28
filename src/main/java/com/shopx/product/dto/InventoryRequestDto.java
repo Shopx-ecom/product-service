@@ -7,7 +7,6 @@ import lombok.*;
 @Setter
 public class InventoryRequestDto {
     private Long productId;
-    private Long sellerId;
     private Integer quantity;
     private Double price;
 }
