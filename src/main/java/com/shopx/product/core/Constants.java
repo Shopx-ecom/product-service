@@ -9,4 +9,6 @@ public class Constants {
 
     public static final String SESSION_USER_ID ="X-User-Id";
     public static final String SESSION_USER_ROLE ="X-User-Role";
+    public static final String SESSION_ACTOR_ID ="X-Actor-Id";
+
 }

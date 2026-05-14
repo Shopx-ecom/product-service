@@ -108,4 +108,11 @@ public class ProductController {
         service.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/test")
+    public String test(
+            HttpServletRequest request
+    ){
+        return "service running.\nActor id : "+request.getAttribute(Constants.SESSION_ACTOR_ID)+"\nUser if : "+request.getAttribute(Constants.SESSION_USER_ID);
+    }
 }

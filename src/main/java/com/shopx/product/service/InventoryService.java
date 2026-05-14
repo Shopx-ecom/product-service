@@ -1,29 +1,33 @@
 
 package com.shopx.product.service;
 
-import com.shopx.product.core.DefaultFilter;
-import com.shopx.product.core.FindResourceOption;
-import com.shopx.product.core.PageResponse;
+import com.shopx.common.dto.OrderItemResponseDto;
+import com.shopx.product.core.*;
 import com.shopx.product.dto.InventoryBulkRequest;
 import com.shopx.product.dto.InventoryResponseDto;
 import com.shopx.product.entity.Inventory;
+import com.shopx.product.exception.NotFoundException;
 import com.shopx.product.filter.InventoryFilter;
 import com.shopx.product.mapper.InventoryMapper;
 import com.shopx.product.repository.InventoryRepository;
-import com.shopx.product.core.ResourceService;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class InventoryService extends ResourceService<Inventory> {
@@ -136,4 +140,54 @@ public class InventoryService extends ResourceService<Inventory> {
                 DefaultFilter.builder().build()
         ).getData().stream().map(InventoryMapper::toResponse).toList();
     }
+
+    @Transactional
+    public void bulkUpdateInventoryQuantity(List<OrderItemResponseDto> orderItemResponseDtos) {
+
+        Map<Long,OrderItemResponseDto> itemMap = orderItemResponseDtos.stream().collect(
+                Collectors.toMap(
+                        OrderItemResponseDto::getProductId,
+                        Function.identity()
+                )
+        );
+
+        List<Inventory> inventories = this.findResources(
+                InventoryFilter.builder()
+                        .productIds(orderItemResponseDtos.stream().map(OrderItemResponseDto::getProductId).toList())
+                        .sellerIds(orderItemResponseDtos.stream().map(OrderItemResponseDto::getSellerId).toList())
+                        .build(),
+                FindResourceOption.builder().build(),
+                DefaultFilter.builder().build()
+        ).getData();
+
+        if (orderItemResponseDtos.size() != inventories.size()) {
+            throw new RuntimeException("Some inventories not found");
+        }
+
+        for (Inventory inventory : inventories) {
+
+            if (inventory.getQuantity() <= 0) {
+                throw new RuntimeException(
+                        "Insufficient inventory for id: " + inventory.getId()
+                );
+            }
+
+            OrderItemResponseDto orderItemResponseDto = itemMap.get(inventory.getProductId());
+            if(orderItemResponseDto==null)
+                throw new NotFoundException("order item not found");
+
+            int requiredQuantity = orderItemResponseDto.getQuantity()==null?0:orderItemResponseDto.getQuantity();
+            if(requiredQuantity<=0 || requiredQuantity>inventory.getQuantity())
+                throw new NotFoundException("Invalid quantity");
+
+            inventory.setQuantity(
+                    inventory.getQuantity() - requiredQuantity
+            );
+        }
+
+        repository.saveAll(inventories);
+
+        log.info("Stock reduced");
+    }
+
 }

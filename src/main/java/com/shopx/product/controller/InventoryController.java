@@ -97,9 +97,9 @@ public class InventoryController {
         );
     }
 
-    @PreAuthorize("hasRole('SELLER')")
+    @PreAuthorize("hasAnyRole('SELLER','CUSTOMER')")
     @Operation(summary = "Endpoint to update inventory")
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<InventoryResponseDto> update(
             @PathVariable Long id,
             @Valid @RequestBody InventoryUpdateDto dto
@@ -125,5 +125,10 @@ public class InventoryController {
             @RequestBody List<InventoryBulkRequest> requests
     ) {
         return ResponseEntity.ok(service.getByProductAndSeller(requests));
+    }
+
+    @GetMapping("/test")
+    public String test(){
+        return "service running.";
     }
 }

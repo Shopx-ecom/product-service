@@ -50,9 +50,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String token = authHeader.substring(7);
 
         Long userId = null;
+        Long actorId = null;
         List<String> roles=null;
         try {
             userId = jwtUtil.extractUserId(token);
+            actorId = jwtUtil.extractActorId(token);
             roles = jwtUtil.extractRoles(token);
 
             log.info("Extracted userId : {}",userId);
@@ -70,6 +72,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             request.setAttribute(Constants.SESSION_USER_ID,userId);
+            request.setAttribute(Constants.SESSION_ACTOR_ID,actorId);
             var authorities = roles.stream()
                     .map(SimpleGrantedAuthority::new)
                     .toList();

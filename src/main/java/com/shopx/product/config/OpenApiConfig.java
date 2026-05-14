@@ -25,7 +25,7 @@ import java.util.List;
 
 @Configuration
 @OpenAPIDefinition(
-        info = @Info(title = "shopx user service API", version = "v1"),
+        info = @Info(title = "shopx - Product service ", version = "v1"),
         security = @SecurityRequirement(name = "bearerAuth")
 )
 @SecurityScheme(

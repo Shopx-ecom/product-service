@@ -33,23 +33,6 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public String generateToken(UserDetails userDetails,Long userId) {
-
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("roles", userDetails.getAuthorities()
-                .stream()
-                .map(GrantedAuthority::getAuthority)
-                .toList());
-
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(String.valueOf(userId))
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expiryMs))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-                .compact();
-    }
-
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -60,6 +43,11 @@ public class JwtUtil {
 
     public Long extractUserId(String token){
         return Long.parseLong(extractAllClaims(token).getSubject());
+    }
+
+    public Long extractActorId(String token){
+        Claims claims = extractAllClaims(token);
+        return claims.get("actorId",Long.class);
     }
 
     public List<String> extractRoles(String token) {

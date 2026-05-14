@@ -47,6 +47,7 @@ public class SecurityConfig {
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .exceptionHandling(ex -> ex
@@ -62,7 +63,8 @@ public class SecurityConfig {
                                 "/api/v1/auth/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
-                                "/api/v1/users/**"
+                                "/api/v1/users/**",
+                                "/h2-console/**"
                         ).permitAll()
                         .anyRequest().authenticated()
         ).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
@@ -76,7 +78,8 @@ public class SecurityConfig {
         var allowedSites = List.of(
                 "http://localhost:9000",
                 "http://localhost:9020",
-                "http://localhost:9040"
+                "http://localhost:9040",
+                "http://localhost:9080"
         );
 
         config.setAllowedOrigins(allowedSites);
