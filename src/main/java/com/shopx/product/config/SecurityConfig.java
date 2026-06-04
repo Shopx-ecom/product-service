@@ -64,7 +64,9 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/api/v1/users/**",
-                                "/h2-console/**"
+                                "/api/v1/search/**",
+                                "/h2-console/**",
+                                "/search.html"
                         ).permitAll()
                         .anyRequest().authenticated()
         ).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
@@ -79,7 +81,8 @@ public class SecurityConfig {
                 "http://localhost:9000",
                 "http://localhost:9020",
                 "http://localhost:9040",
-                "http://localhost:9080"
+                "http://localhost:9080",
+                "https://shopx-ai-search.netlify.app"
         );
 
         config.setAllowedOrigins(allowedSites);

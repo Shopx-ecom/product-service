@@ -5,7 +5,7 @@ spring:
   application:
     name: product-service
   profiles:
-    active: dev
+    active: prod
   mvc:
     throw-exception-if-no-handler-found: true
   web:
@@ -23,6 +23,15 @@ eureka:
 jwt:
   secret: qwertyuiopasdfghjklzxcvbnmQWERTYUASDFGHJZXCVBNwerty
   expiry: 900000
+
+gemini:
+  api:
+    key: AQ.Ab8RN6IewSE0z-l4Td1UhlhRXaeBtiIgbAa7yxpfTt0f3gn9Ag    # set this env variable — never hardcode
+  embedding:
+    url: https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent
+
+search:
+  top-k: 10   # number of nearest neighbours to return from pgvector
 
 springdoc:
   swagger-ui:

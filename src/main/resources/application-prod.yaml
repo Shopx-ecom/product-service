@@ -1,0 +1,32 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://db.xvumjoqvadtdlaoihchd.supabase.co:5432/postgres?user=postgres&password=RV7fAW8s3N84dHI5
+    username: postgres
+    password: RV7fAW8s3N84dHI5
+    driver-class-name: org.postgresql.Driver
+
+  flyway:
+      baseline-on-migrate: true
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: order-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.value.default.type: com.shopx.common.event.PaymentEvent
+
+
