@@ -3,6 +3,7 @@ package com.shopx.product.dto;
 
 import lombok.*;
 
+@Builder
 @Getter
 @Setter
 public class ProductRequestDto {

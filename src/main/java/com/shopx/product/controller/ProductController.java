@@ -13,9 +13,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -26,15 +30,25 @@ public class ProductController {
 
     @PreAuthorize("hasRole('SELLER')")
     @Operation(summary = "Endpoint to create product")
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProductResponseDto> create(
-            @Valid @RequestBody ProductRequestDto dto,
+            @RequestParam String productName,
+            @RequestParam String category,
+            @RequestParam String description,
+            @RequestPart(required = false,value = "images") List<MultipartFile> images,
             HttpServletRequest request
     ) {
         Long userId = (Long) request.getAttribute(Constants.SESSION_USER_ID);
 
         Product saved = service.createProduct(
-                ProductMapper.toEntity(dto)
+                ProductMapper.toEntity(
+                        ProductRequestDto.builder()
+                                .name(productName)
+                                .category(category)
+                                .description(description)
+                                .build()
+                ),
+                images
         );
 
         saved.setCreatedBy(userId);

@@ -23,6 +23,7 @@ public class ProductMapper {
         dto.setId(p.getId());
         dto.setName(p.getName());
         dto.setCategory(p.getCategory());
+        dto.setImage(p.getImages());
         return dto;
     }
 

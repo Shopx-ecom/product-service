@@ -103,6 +103,7 @@ public class SearchService {
                             .name(p.getName())
                             .category(p.getCategory())
                             .active(p.getActive())
+                            .image(p.getImages())
                             .lowestPrice(lowestPrice)
                             .totalStock(totalStock)
                             .build();

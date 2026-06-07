@@ -4,6 +4,10 @@ import com.shopx.product.core.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -22,6 +26,9 @@ public class Product extends BaseEntity {
 
     @Column(name = "category", length = 100)
     private String category;
+
+    @Column(name = "images")
+    private String images;
 
     @Column(name = "is_active", nullable = false)
     @Builder.Default

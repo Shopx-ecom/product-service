@@ -29,4 +29,17 @@ spring:
         spring.json.trusted.packages: "*"
         spring.json.value.default.type: com.shopx.common.event.PaymentEvent
 
+gemini:
+  api:
+    key: ${GEMINI_AI}
+  embedding:
+    url: https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent
 
+supabase:
+  url: https://xvumjoqvadtdlaoihchd.supabase.co
+  service-key: ${SERVICE_ROLE_KEY}
+  bucket: product-image-v1
+
+jwt:
+  secret: ${JWT_KEY}
+  expiry: 900000

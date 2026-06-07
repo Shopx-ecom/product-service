@@ -14,9 +14,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -25,6 +27,7 @@ import java.util.Optional;
 public class ProductService extends ResourceService<Product> {
 
     private final ProductRepository repository;
+    private final StorageService storageService;
 
     protected Class<Product> getEntityType() { return Product.class; }
     protected JpaRepository<Product, Long> getRepository() { return repository; }
@@ -77,8 +80,14 @@ public class ProductService extends ResourceService<Product> {
     }
 
     // create
-    public Product createProduct(Product product) {
-        return create(product, Map.of());
+    public Product createProduct(Product product, List<MultipartFile> images) {
+
+     if(images!=null) {
+         List<String> urls = storageService.upload(images);
+         if (urls != null && !urls.isEmpty())
+             product.setImages(urls.getFirst());
+     }
+      return create(product, Map.of());
     }
 
     // get by id

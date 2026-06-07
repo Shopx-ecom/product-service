@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>upload</title>
+</head>
+<body>
+<input type="file" id="files" multiple>
+<button onclick="upload()">Upload All</button>
+
+<script>
+    async function upload() {
+        const files = document.getElementById("files").files;
+        const token = "eyJhbGciOiJIUzI1NiJ9.eyJhY3RvcklkIjo5LCJyb2xlcyI6WyJST0xFX1NFTExFUiJdLCJzdWIiOiIyMSIsImlhdCI6MTc4MDc0NDUyMSwiZXhwIjoxNzgwNzQ1NDIxfQ.nWZXRywmYPEh8z8w4jZv4dkT6CYdZ2IMUBycIylgTm8";
+
+        for (const file of files) {
+
+            const formData = new FormData();
+            formData.append("images", file);
+
+            const name = file.name.split(".")[0];
+
+            const productRes = await fetch(
+                `http://localhost:9060/api/v1/products?productName=${name}&category=electronics&description=${name}`,
+                {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: formData
+                }
+            );
+
+            const product = await productRes.json();
+
+            await fetch(
+                "http://localhost:9060/api/v1/inventory/create",
+                {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        productId: product.id,
+                        quantity: 10,
+                        price: 1000
+                    })
+                }
+            );
+
+            console.log("Created:", name);
+        }
+
+        alert("Done");
+    }
+</script>
+</body>
+</html>

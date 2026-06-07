@@ -11,6 +11,7 @@ public class ProductListingDto {
 
     private Long productId;
     private String name;
+    private String image;
     private String category;
     private Boolean active;
 

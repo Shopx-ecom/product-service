@@ -66,7 +66,9 @@ public class SecurityConfig {
                                 "/api/v1/users/**",
                                 "/api/v1/search/**",
                                 "/h2-console/**",
-                                "/search.html"
+                                "/upload.html",
+                                "/search.html",
+                                "/search-v1.html"
                         ).permitAll()
                         .anyRequest().authenticated()
         ).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
