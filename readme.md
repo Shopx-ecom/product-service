@@ -1,9 +1,13 @@
 # ShopX Semantic Search
 
-A semantic product search and suggestions feature built on **pgvector** + **Gemini text-embedding-004**. No keyword matching, no LIKE queries — pure vector similarity.
-<br>
-Built by [@Sameer Shaikh](https://github.com/Sameer377)
----
+**Try Semantic Search:** https://shopx-ai-search.netlify.app/
+
+### Ever wondered how Amazon and Flipkart return exactly what you want even when your words never matched the product name? I built a similar feature
+#### Developer [@Sameer Shaikh](https://github.com/Sameer377)
+
+## Semantic Search Pipeline
+
+![Semantic Search Pipeline](https://raw.githubusercontent.com/Shopx-ecom/product-service/master/detailed-search-pip.png)
 
 ## How It Works
 
